@@ -2,16 +2,79 @@ import React, { useState, useCallback, useEffect } from 'react';
 import web3 from '../utils/web3'
 import detectEthereumProvider from '@metamask/detect-provider';
 import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const useConnect = () => {
     const [currentAccount, setCurrentAccount] = useState('');
-    const [loading, setLoading] = useState(false)
-    const [message, setMessage] = useState([])
+    const [loading, setLoading] = useState(false);
+
+    const toastMessage = (message = []) => {
+        const editMessage = (
+            <div>
+                <h1>{message[0]?.head}</h1>
+                <p>{message[0]?.body}</p>
+            </div>
+        )
+        switch (message[0]?.variant) {
+            case 'success':
+                toast.success(editMessage, {
+                    style: {
+                        width: '529.47px',
+                        height: '148.82px'
+                    },
+                    position: "bottom-left",
+                    autoClose: 3500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                break;
+            case 'warning':
+                toast.warn(editMessage, {
+                    style: {
+                        width: '529.47px',
+                        height: '148.82px'
+                    },
+                    position: "bottom-left",
+                    autoClose: 3500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                break;
+            case 'info':
+                toast.info(editMessage, {
+                    style: {
+                        width: '529.47px',
+                        height: '148.82px'
+                    },
+                    position: "bottom-left",
+                    autoClose: 3500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                break;
+            default:
+                setCurrentAccount('1')
+                break;
+        }
+    }
+
 
     const SignOut = async () => {
         setLoading(false)
         setCurrentAccount('')
-        setMessage([{ head: `Logout`, body: `To completely logout remove this site from metamask on connections`, variant: 'warning' }])
+        toastMessage([{ head: `Logout`, body: `To completely logout remove this site from metamask on connections`, variant: 'warning' }])
+
+
     }
 
     const SignIn = async () => {
@@ -19,13 +82,17 @@ const useConnect = () => {
         if (!web3.currentProvider) {
 
             const messag = [{ head: "Wallet not found", body: `Please install MetaMask!`, variant: 'warning' }]
-            setMessage(messag)
+            toastMessage(messag)
+
+
 
         } else {
             const address = await ConnectWallet()
 
             if (address)
-                setMessage([{ head: "User Login", body: `addres: ${String(address)}`, variant: 'success' }])
+                toastMessage([{ head: "User Login", body: `addres: ${String(address)}`, variant: 'success' }])
+
+
             setLoading(true)
         }
 
@@ -40,15 +107,17 @@ const useConnect = () => {
 
             const id = await window.ethereum.request({ method: 'eth_chainId' })
 
-            if (id === '0x4' || id === '0xA869') {
+            if (id === '0x4' || id === '0xa869') {
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
                 setLoading(true)
                 setCurrentAccount(accounts[0])
                 return accounts[0]
             }
             else {
-                console.log('Please change to Rinkeby or Fuji as we only accept those networks.')
-                setMessage([{ head: "Invalid Network", body: 'Please change to Rinkeby or Fuji', variant: 'warning' }])
+                console.log('Please change to Rinkeby or Fuji as we only accept those networks. aqui')
+                toastMessage([{ head: "Invalid Network", body: 'Please change to Rinkeby or Fuji', variant: 'warning' }])
+
+
             }
 
         } catch (err) {
@@ -57,30 +126,42 @@ const useConnect = () => {
                 // If this happens, the user rejected the connection request.
                 console.log('Please connect to MetaMask.')
                 const messag = [{ head: "User Rejected Request", body: 'Please connect to MetaMask.', variant: 'info' }]
-                setMessage(messag)
+                toastMessage(messag)
+
+
 
             } else if (err.code === -32002) {
                 console.log('Please unlock MetaMask.')
                 const messag = [{ head: "User Request Pending", body: 'Please unlock MetaMask and try agin.', variant: 'info' }]
-                setMessage(messag)
+                toastMessage(messag)
+
+
             } else {
                 console.error(err);
                 const messag = [{ head: "Error", body: err.message, variant: 'info' }]
-                setMessage(messag)
+                toastMessage(messag)
+
+
             }
         }
     }
+
+    const verifyFuji =
 
     const handleAccountsChanged = useCallback((accounts) => {
         if (accounts.length === 0) {
             // MetaMask is locked or the user has not connected any accounts
             const messag = [{ head: "User Rejected Request", body: 'Please connect to MetaMask.', variant: 'info' }]
-            setMessage(messag)
+            toastMessage(messag)
+
+
             setCurrentAccount('')
         } else if (accounts[0] !== currentAccount) {
             setCurrentAccount(accounts[0])
             const messag = [{ head: "Account Changed", body: `addres: ${accounts[0]}`, variant: 'warning' }]
-            setMessage(messag)
+            toastMessage(messag)
+
+
             // Do any other work!
         }
     }, [])
@@ -103,52 +184,7 @@ const useConnect = () => {
 
     }, [])
 
-    const toastMessage = (message) => {
-        const editMessage = (
-            <div>
-                <h1>{message[0].head}</h1>
-                <p>{message[0].body}</p>
-            </div>
-        )
-        switch (message[0].variant) {
-            case 'success':
-                toast.success(editMessage, {
-                    position: "bottom-left",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-                break;
-            case 'warning':
-                toast.warn(editMessage, {
-                    position: "bottom-left",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-                break;
-            case 'info':
-                toast.info(editMessage, {
-                    position: "bottom-left",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-                break;
-            default:
-                setCurrentAccount('1')
-                break;
-        }
-    }
+
 
     useEffect(() => {
         (async () => {
@@ -170,20 +206,15 @@ const useConnect = () => {
                 console.log("Install MestaMask")
             }
         })()
-        toastMessage(message)
-    }, [message])
+
+    }, [])
 
     return {
-        connect,
-        handleRequestAccounts,
         SignOut,
         SignIn,
         currentAccount,
         loading
     }
-
-
-
 
 }
 
