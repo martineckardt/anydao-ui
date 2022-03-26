@@ -30,18 +30,34 @@ const App = () => {
   } = useConnect();
 
   const handleChainVote = (chainName, newStatus) => {
-    console.log("handle chain vote", chains, chainName, newStatus);
 
-    var chains = { ...chains };
+    setChains(prevChains => {
+      var chains = { ...prevChains };
 
-    // Reset status of unvoted (connected) chains
-    if (newStatus === "connected")
-      Object.values(chains)
-        .filter(chain => chain.status == "connected")
-        .map(chain => chain.status = "disconnected");
 
-    chains[chainName].status = newStatus;
-    setChains(chains);
+      switch (newStatus) {
+        case "connected":
+          Object.values(chains)
+            .filter(chain => chain.status == "connected")
+            .map(chain => chain.status = "disconnected");
+          chains[chainName].status = newStatus;
+          break;
+        case "approved":
+          // Send Transaction to Chain
+
+          // If successfull
+          chains[chainName].status = newStatus;
+          break;
+        case "denied":
+          // Send Transaction to Chain
+
+          // If successfull
+          chains[chainName].status = newStatus;
+          break;
+      }
+
+      return chains;
+    });
   }
 
   return (<>
