@@ -1,24 +1,68 @@
-import * as React from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import React, { useState } from "react";
 import "./App.css";
+import useConnect from './hooks/useConnect';
 
-export default function App() {
-  return (
-    <div className="container">
-      <Header />
-      <Routes>
-        <Route path="/" element={<ProposalDetailView />} />
-      </Routes>
-    </div>
-  );
+export default class App extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    const {
+      connect,
+      handleRequestAccounts,
+      SignOut,
+      SignIn,
+      currentAccount,
+      loading
+    } = useConnect()
+
+
+    this.state = {
+      chains: {
+        "Fuji": {
+          chainBalance: 13000,
+          status: "disconnected",
+        },
+        "Rinkeby": {
+          chainBalance: 1134,
+          status: "disconnected",
+        }
+      }
+    };
+
+    this.handleChainVote = this.handleChainVote.bind(this);
+  }
+
+  handleChainVote(chainName, newStatus) {
+    console.log("handle chain vote");
+    var chains = { ...this.state.chains };
+
+    // Reset status of unvoted (connected) chains
+    if (newStatus === "connected")
+      Object.values(chains)
+        .filter(chain => chain.status == "connected")
+        .map(chain => chain.status = "disconnected");
+
+    chains[chainName].status = newStatus;
+    this.setState({ chains })
+  }
+
+  render() {
+    return (
+      <div className="container">
+        <Header onWalletConnectClick={() => console.log("Wallet Connect clicked!")} />
+        <ProposalDetailView chains={this.state.chains} handleChainVote={this.handleChainVote} />
+      </div>
+    );
+  }
 }
 
-function Header() {
+function Header({ onWalletConnectClick }) {
   return (
     <div className="row py-3">
       <p className="col-md-10">anyDAO</p>
       <p className="col-md-2">
-        <button type="button" className="btn btn-outline-dark">
+        <button type="button" className="btn btn-outline-dark" onClick={onWalletConnectClick}>
           Connect Wallet
         </button>
       </p>
@@ -26,15 +70,15 @@ function Header() {
   )
 }
 
-function ProposalDetailView() {
+function ProposalDetailView({ chains, handleChainVote }) {
   return (
-    <>
-      <p className="mt-5">Back</p>
+    <div className="my-5">
+      <p>Back</p>
       <h4>anyDAO</h4>
       <main className="row">
         <div className="col-md-8">
           <div className="card bg-light">
-            <div class="card-body">
+            <div className="card-body">
               <h3>VOTE to make $1INCH deflationary!</h3>
               <p>Implementing a strong deflationary mechanism to the 1inch token.</p>
               <p>Removing Single-Asset-Staking & Farming Completely. Replace with a deflationary mechanism.</p>
@@ -42,34 +86,15 @@ function ProposalDetailView() {
             </div>
           </div>
 
-          <div className="card bg-light mt-2">
-            <div class="card-body">
-              <div className="row align-items-center">
-                <div className="col">
-                  <h3>Vote from FUJI</h3>
-                  <p>Balance at snapshot 13.000</p>
-                </div>
-                <div className="col text-end">
-                  <button type="button" class="btn btn-outline-dark">Connect Wallet</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="card bg-light mt-2">
-            <div class="card-body">
-              <div className="row align-items-center">
-                <div className="col">
-                  <h3>Vote from FUJI</h3>
-                  <p>Balance at snapshot 13.000</p>
-                </div>
-                <div className="col text-end">
-                  <button type="button" className="btn btn-outline-dark me-2">Approve</button>
-                  <button type="button" className="btn btn-outline-dark">Deny</button>
-                </div>
-              </div>
-            </div>
-          </div>
+          {Object.entries(chains).map(([chainName, { chainBalance, status }]) => <ChainVoter
+            key={chainName}
+            chainName={chainName}
+            chainBalance={chainBalance}
+            status={status}
+            onApproveClick={() => handleChainVote(chainName, "approved")}
+            onDenyClick={() => handleChainVote(chainName, "denied")}
+            onConnectClick={() => handleChainVote(chainName, "connected")}
+          />)}
 
         </div>
 
@@ -90,8 +115,49 @@ function ProposalDetailView() {
           </div>
         </div>
       </main>
-    </>
+    </div>
   );
 }
 
+function ChainVoter({ status, chainName, chainBalance, onConnectClick, onApproveClick, onDenyClick }) {
+  return (
+    <>
+      <div className="card bg-light mt-2">
+        <div className="card-body">
+          <div className="row align-items-center">
+            <div className="col-8">
+              <h3>Vote from {chainName}</h3>
+              <p>Balance at snapshot {chainBalance}</p>
+            </div>
+            <div className="col col-4 text-end">
+              {
+                {
+                  'disconnected': (<>
+                    <button type="button" className="btn btn-outline-dark" onClick={onConnectClick}>Connect to {chainName}</button>
+                  </>),
+                  'connected': (<>
+                    <button type="button" className="btn btn-outline-dark me-2" onClick={onApproveClick}>Approve</button>
+                    <button type="button" className="btn btn-outline-dark" onClick={onDenyClick}>Deny</button>
+                  </>),
+                  'approved': <button
+                    type="button"
+                    className="btn btn-outline-dark me-2"
+                  >
+                    Approved
+                  </button>,
+                  'denied': <button
+                    type="button"
+                    className="btn btn-outline-dark me-2"
+                  >
+                    Denied
+                  </button>
+                }[status]
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
 

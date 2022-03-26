@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import web3 from '../utils/web3'
-
-
-
+import detectEthereumProvider from '@metamask/detect-provider';
+import { ToastContainer, toast } from 'react-toastify';
 
 const useConnect = () => {
-    const [currentAccount, setCurrentAccount] = useState('')
+    const [currentAccount, setCurrentAccount] = useState('');
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState([])
 
@@ -13,6 +12,25 @@ const useConnect = () => {
         setLoading(false)
         setCurrentAccount('')
         setMessage([{ head: `Logout`, body: `To completely logout remove this site from metamask on connections`, variant: 'warning' }])
+    }
+
+    const SignIn = async () => {
+
+        if (!web3.currentProvider) {
+
+            const messag = [{ head: "Wallet not found", body: `Please install MetaMask!`, variant: 'warning' }]
+            setMessage(messag)
+
+        } else {
+            const address = await ConnectWallet()
+
+            if (address)
+                setMessage([{ head: "User Login", body: `addres: ${String(address)}`, variant: 'success' }])
+            setLoading(true)
+        }
+
+
+
     }
 
     const ConnectWallet = async () => {
@@ -24,7 +42,7 @@ const useConnect = () => {
 
             if (id === '0x4' || id === '0xA869') {
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
-                setIsLogged(true)
+                setLoading(true)
                 setCurrentAccount(accounts[0])
                 return accounts[0]
             }
@@ -52,6 +70,120 @@ const useConnect = () => {
             }
         }
     }
+
+    const handleAccountsChanged = useCallback((accounts) => {
+        if (accounts.length === 0) {
+            // MetaMask is locked or the user has not connected any accounts
+            const messag = [{ head: "User Rejected Request", body: 'Please connect to MetaMask.', variant: 'info' }]
+            setMessage(messag)
+            setCurrentAccount('')
+        } else if (accounts[0] !== currentAccount) {
+            setCurrentAccount(accounts[0])
+            const messag = [{ head: "Account Changed", body: `addres: ${accounts[0]}`, variant: 'warning' }]
+            setMessage(messag)
+            // Do any other work!
+        }
+    }, [])
+
+    const handleRequestAccounts = useCallback(() => {
+        window.ethereum
+            .request({ method: 'eth_accounts' })
+            .then(handleAccountsChanged);
+
+        // Note that this event is emitted on page load.
+        // If the array of accounts is non-empty, you're already
+        // connected.
+        window.ethereum.on('accountsChanged', handleAccountsChanged);
+    }, [])
+
+    const connect = useCallback(() => {
+        window.ethereum
+            .request({ method: 'eth_requestAccounts' })
+            .then(handleAccountsChanged)
+
+    }, [])
+
+    const toastMessage = (message) => {
+        const editMessage = (
+            <div>
+                <h1>{message[0].head}</h1>
+                <p>{message[0].body}</p>
+            </div>
+        )
+        switch (message[0].variant) {
+            case 'success':
+                toast.success(editMessage, {
+                    position: "bottom-left",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                break;
+            case 'warning':
+                toast.warn(editMessage, {
+                    position: "bottom-left",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                break;
+            case 'info':
+                toast.info(editMessage, {
+                    position: "bottom-left",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                break;
+            default:
+                setCurrentAccount('1')
+                break;
+        }
+    }
+
+    useEffect(() => {
+        (async () => {
+            const provider = await detectEthereumProvider()
+            if (provider !== null) {
+                const permissions = await window.ethereum.request({ method: 'wallet_getPermissions' });
+                if (permissions.length > 0) {
+                    // User is already connected just straight log him in
+                    ConnectWallet()
+                    // setIsWalletPermissions(true)
+                }
+                else {
+                    // User not connected initial flow
+                    console.log("User has no permissions")
+                    // setIsWalletPermissions(false)
+                }
+            } else {
+                setLoading(false)
+                console.log("Install MestaMask")
+            }
+        })()
+        toastMessage(message)
+    }, [message])
+
+    return {
+        connect,
+        handleRequestAccounts,
+        SignOut,
+        SignIn,
+        currentAccount,
+        loading
+    }
+
+
+
 
 }
 
