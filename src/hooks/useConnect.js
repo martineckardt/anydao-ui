@@ -5,9 +5,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
+
 const useConnect = () => {
     const [currentAccount, setCurrentAccount] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isFuji, setIsFuji] = useState(false);
+    const [isRike, setIsRike] = useState(false);
 
     const toastMessage = (message = []) => {
         const editMessage = (
@@ -111,6 +114,13 @@ const useConnect = () => {
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
                 setLoading(true)
                 setCurrentAccount(accounts[0])
+                if (id === '0x4') {
+                    setIsRike(true)
+                    setIsFuji(false)
+                } else {
+                    setIsRike(false)
+                    setIsFuji(true)
+                }
                 return accounts[0]
             }
             else {
@@ -146,7 +156,7 @@ const useConnect = () => {
         }
     }
 
-    //const verifyFuji = 
+    // const connectRike = 
 
     const handleAccountsChanged = useCallback((accounts) => {
         if (accounts.length === 0) {
@@ -184,6 +194,55 @@ const useConnect = () => {
 
     }, [])
 
+    const connectRick = async () => {
+        try {
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '0x4' }], //0xFA
+            });
+            setIsRike(true)
+            setIsFuji(false)
+        } catch (error) {
+            // This error code indicates that the chain has not been added to MetaMask.
+            if (error.code === 4902) {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{ chainId: '0x4', chainName: 'TestNet Rinkeby', nativeCurrency: { name: 'Rinkeby', symbol: 'ETH', decimals: 18 }, rpcUrls: ['https://rinkeby.arbitrum.io/rpc'], blockExplorerUrls: ['https://rinkeby.etherscan.io/'] }],
+                    }); //0xFA
+                } catch (addError) {
+                    // handle "add" error
+                    console.log(addError);
+                }
+            }
+            // handle other "switch" errors
+        }
+    }
+
+    const connectFuji = async () => {
+        try {
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '0xa869' }], //0xFA
+            });
+            setIsRike(false)
+            setIsFuji(true)
+        } catch (error) {
+            // This error code indicates that the chain has not been added to MetaMask.
+            if (error.code === 4902) {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{ chainId: '0xa869', chainName: 'TestNet Fuji', nativeCurrency: { name: 'Fuji', symbol: 'AVAX', decimals: 18 }, rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'], blockExplorerUrls: ['https://testnet.snowtrace.io/'] }],
+                    }); //0xFA
+                } catch (addError) {
+                    // handle "add" 
+                    console.log(addError);
+                }
+            }
+            // handle other "switch" errors
+        }
+    }
 
 
     useEffect(() => {
@@ -213,7 +272,11 @@ const useConnect = () => {
         SignOut,
         SignIn,
         currentAccount,
-        loading
+        loading,
+        isFuji,
+        isRike,
+        connectFuji,
+        connectRick
     }
 
 }

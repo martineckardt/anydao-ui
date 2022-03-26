@@ -2,18 +2,19 @@
 
 // Colors
 $body-bg: #0A0909;
-$body-color: white;
+$white: #F5F0F1;
+$body-color:$white;
 $red: #EB3D3D;
 $green: #32D957;
 $yellow: #FFCE52;
-
 
 // Fonts
 $font-family-base: "Raleway";
 
 $font-weight-light: 300;
-$font-weight-normal: 500;
-$font-weight-bold: 700; 
+$font-weight-normal: 400;
+$font-weight-bold: 600; 
+$font-weight-bolder: 700;
 $headings-font-weight: 800;
 
 // Buttons
