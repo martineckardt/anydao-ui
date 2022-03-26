@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 
+// Colors
+$body-bg: #0A0909;
+$body-color: white;
+$red: #EB3D3D;
+$green: #32D957;
+$yellow: #FFCE52;
+
+
+// Fonts
 $font-family-base: "Raleway";
 
 $font-weight-light: 300;
@@ -7,9 +16,14 @@ $font-weight-normal: 500;
 $font-weight-bold: 700; 
 $headings-font-weight: 800;
 
-// Override default variables before the import
-//$body-bg: #000;
+// Buttons
+$btn-border-radius: 70px;
 
+// Cards
+$card-bg: #1C1B1B;
+$card-border-radius: 6px;
+
+// Widths
 $container-max-widths: (
   sm: 240px,
   md: 420px,

@@ -1,41 +1,38 @@
 import React, { useState } from "react";
 import "./App.css";
 import useConnect from './hooks/useConnect';
+import substr from "./utils/substr";
 
-export default class App extends React.Component {
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-  constructor(props) {
-    super(props);
-
-    const {
-      connect,
-      handleRequestAccounts,
-      SignOut,
-      SignIn,
-      currentAccount,
-      loading
-    } = useConnect()
+import logo_dark from './assets/logo_dark.svg';
+import logo_light from './assets/logo_light.svg';
 
 
-    this.state = {
-      chains: {
-        "Fuji": {
-          chainBalance: 13000,
-          status: "disconnected",
-        },
-        "Rinkeby": {
-          chainBalance: 1134,
-          status: "disconnected",
-        }
-      }
-    };
+const App = () => {
+  const [chains, setChains] = useState({
+    "Fuji": {
+      chainBalance: 13000,
+      status: "disconnected",
+    },
+    "Rinkeby": {
+      chainBalance: 1134,
+      status: "disconnected",
+    }
+  });
 
-    this.handleChainVote = this.handleChainVote.bind(this);
-  }
+  const {
+    SignOut,
+    SignIn,
+    currentAccount,
+    loading
+  } = useConnect();
 
-  handleChainVote(chainName, newStatus) {
-    console.log("handle chain vote");
-    var chains = { ...this.state.chains };
+  const handleChainVote = (chainName, newStatus) => {
+    console.log("handle chain vote", chains, chainName, newStatus);
+
+    var chains = { ...chains };
 
     // Reset status of unvoted (connected) chains
     if (newStatus === "connected")
@@ -44,26 +41,25 @@ export default class App extends React.Component {
         .map(chain => chain.status = "disconnected");
 
     chains[chainName].status = newStatus;
-    this.setState({ chains })
+    setChains(chains);
   }
 
-  render() {
-    return (
-      <div className="container">
-        <Header onWalletConnectClick={() => console.log("Wallet Connect clicked!")} />
-        <ProposalDetailView chains={this.state.chains} handleChainVote={this.handleChainVote} />
-      </div>
-    );
-  }
-}
+  return (<>
+    <div className="container-xl">
+      <Header onWalletConnectClick={loading ? () => SignOut() : () => SignIn()} loading={loading} currentAccount={currentAccount} />
+      <ProposalDetailView chains={chains} handleChainVote={handleChainVote} />
+    </div>
+    <Footer />
+  </>);
+};
 
-function Header({ onWalletConnectClick }) {
+function Header({ onWalletConnectClick, loading, currentAccount }) {
   return (
     <div className="row py-3">
       <p className="col-md-10">anyDAO</p>
       <p className="col-md-2">
-        <button type="button" className="btn btn-outline-dark" onClick={onWalletConnectClick}>
-          Connect Wallet
+        <button type="button" className="btn btn-outline-light" onClick={onWalletConnectClick}>
+          {loading ? substr(currentAccount) : 'Connect Wallet'}
         </button>
       </p>
     </div>
@@ -77,7 +73,7 @@ function ProposalDetailView({ chains, handleChainVote }) {
       <h4>anyDAO</h4>
       <main className="row">
         <div className="col-md-8">
-          <div className="card bg-light">
+          <div className="card">
             <div className="card-body">
               <h3>VOTE to make $1INCH deflationary!</h3>
               <p>Implementing a strong deflationary mechanism to the 1inch token.</p>
@@ -122,7 +118,7 @@ function ProposalDetailView({ chains, handleChainVote }) {
 function ChainVoter({ status, chainName, chainBalance, onConnectClick, onApproveClick, onDenyClick }) {
   return (
     <>
-      <div className="card bg-light mt-2">
+      <div className="card mt-2">
         <div className="card-body">
           <div className="row align-items-center">
             <div className="col-8">
@@ -133,31 +129,46 @@ function ChainVoter({ status, chainName, chainBalance, onConnectClick, onApprove
               {
                 {
                   'disconnected': (<>
-                    <button type="button" className="btn btn-outline-dark" onClick={onConnectClick}>Connect to {chainName}</button>
+                    <button type="button" className="btn btn-outline-light" onClick={onConnectClick}>Connect to {chainName}</button>
                   </>),
                   'connected': (<>
-                    <button type="button" className="btn btn-outline-dark me-2" onClick={onApproveClick}>Approve</button>
-                    <button type="button" className="btn btn-outline-dark" onClick={onDenyClick}>Deny</button>
+                    <button type="button" className="btn btn-outline-success me-2" onClick={onApproveClick}>Approve</button>
+                    <button type="button" className="btn btn-outline-danger" onClick={onDenyClick}>Deny</button>
                   </>),
                   'approved': <button
                     type="button"
-                    className="btn btn-outline-dark me-2"
+                    className="btn btn-outline-success me-2"
                   >
                     Approved
                   </button>,
                   'denied': <button
                     type="button"
-                    className="btn btn-outline-dark me-2"
+                    className="btn btn-outline-danger me-2"
                   >
                     Denied
                   </button>
                 }[status]
               }
+
             </div>
           </div>
         </div>
       </div>
+      <ToastContainer></ToastContainer>
     </>
   )
 }
 
+function Footer() {
+  return (
+    <div className="container-fluid py-2 bg-light text-dark">
+      <div className="row">
+        <span className="col-md-5 text-center">anyDAO 2022 built for the Avalanche Sumit Hackathon</span>
+        <span className="col-md-2 text-center"><img src={logo_dark} alt="anyDAO" style={{ height: 15 + 'px' }} /></span>
+        <span className="col-md-5 text-center">Powered by Layer Zero, Coinbase and Covalent</span>
+      </div>
+    </div>
+  )
+}
+
+export default App;

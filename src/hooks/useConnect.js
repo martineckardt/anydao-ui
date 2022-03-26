@@ -146,7 +146,7 @@ const useConnect = () => {
         }
     }
 
-    const verifyFuji =
+    const verifyFuji = 
 
     const handleAccountsChanged = useCallback((accounts) => {
         if (accounts.length === 0) {
