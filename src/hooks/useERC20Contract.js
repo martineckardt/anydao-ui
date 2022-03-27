@@ -14,7 +14,7 @@ const useERC20Contract = () => {
     const getBalance = async (tokenAdd, userAddr) => {
         const contractERC = getERC20Contract(tokenAdd)
         try {
-            const balance = await contractERC.methods.balanceOf(userAddr).call()
+            const balance = await contractERC.methods.balanceOf(userAddr).call({ from: currentAccount })
             return balance
         } catch (e) {
             return '0'
