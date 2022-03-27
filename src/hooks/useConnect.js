@@ -118,8 +118,8 @@ const useConnect = () => {
                     setIsRike(true)
                     setIsFuji(false)
                 } else {
-                    setIsRike(false)
-                    setIsFuji(true)
+                    setIsRike(false);
+                    setIsFuji(true);
                 }
                 return accounts[0]
             }
@@ -194,14 +194,14 @@ const useConnect = () => {
 
     }, [])
 
-    const connectRick = async () => {
+    const connectRike = async () => {
         try {
             await window.ethereum.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: '0x4' }], //0xFA
             });
-            setIsRike(true)
-            setIsFuji(false)
+            setIsFuji(false);
+            setIsRike(true);
         } catch (error) {
             // This error code indicates that the chain has not been added to MetaMask.
             if (error.code === 4902) {
@@ -276,7 +276,8 @@ const useConnect = () => {
         isFuji,
         isRike,
         connectFuji,
-        connectRick
+        connectRike,
+        toastMessage
     }
 
 }

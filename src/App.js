@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import "./App.css";
 import useConnect from './hooks/useConnect';
+import useERC from './hooks/useErc20';
+
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import ChainList from "./components/ChainList";
+import ChainVoter from "./components/ChainVoter";
 import ProposalDetails from "./components/ProposalDetails";
 import ProposalResults from "./components/ProposalResults";
-
-import logo_light from './assets/logo_light.svg';
-import { isRequestEthereumAccountsResponse } from "@coinbase/wallet-sdk/dist/relay/Web3Response";
-
 
 const App = () => {
   const {
@@ -24,89 +22,109 @@ const App = () => {
     isFuji,
     isRike,
     connectFuji,
-    connectRick
+    connectRike
   } = useConnect();
 
-
-  const [chains, setChains] = useState({
-    "Fuji": {
-      chainBalance: 13000,
-      status: isFuji ? "connected" : "disconnected",
-      vote: 'null',
-    },
-    "Rinkeby": {
-      chainBalance: 1134,
-      status: isRike ? "connected" : "disconnected",
-      vote: 'null',
-    }
+  const [fuji, setFuji] = useState({
+    chainBalance: 130000,
+    status: isFuji ? "connected" : "disconnected",
+    vote: 'null',
+    approvedCount: 80345,
+    deniedCount: 12564,
   });
 
-  const handleChainVote = (chainName, newStatus) => {
-    console.log("isFuji", isFuji);
-    console.log("isRike", isRike);
-
-    setChains(async prevChains => {
-      var chains = { ...prevChains };
-
-      switch (newStatus) {
-        case "connected":
-          // Connect to other chain
-          console.log("isFuji 2", isFuji);
-
-          if (chainName === "Fuji" && isFuji === false) {
-            return await connectFuji().then(() => {
-              console.log("Change to fuji");
-              // If successfull => mark other chain as disconnected and new chain as connected
-              Object.values(chains)
-                .filter(chain => chain.status == "connected")
-                .map(chain => chain.status = "disconnected");
-              chains[chainName].status = newStatus;
-              return chains;
-            })
-          }
-          break;
-        case "approved":
-          // Send Transaction to Chain
-
-          // If successfull
-          chains[chainName].status = newStatus;
-          break;
-        case "denied":
-          // Send Transaction to Chain
-
-          // If successfull
-          chains[chainName].status = newStatus;
-          break;
-      }
-
-      //return chains;
-    });
-  }
+  const [rike, setRike] = useState({
+    chainBalance: 100134,
+    status: isRike ? "connected" : "disconnected",
+    vote: 'null',
+    approvedCount: 72545,
+    deniedCount: 34684,
+  });
 
   return (<>
-    <div className="container-xl">
+    <div className="container-xl flex-shrink-0">
       <Header onWalletConnectClick={loading ? () => SignOut() : () => SignIn()} loading={loading} currentAccount={currentAccount} />
-      <ProposalDetailView chains={chains} handleChainVote={handleChainVote} />
+      <ProposalDetailView
+        fuji={fuji}
+        isFuji={isFuji}
+        connectFuji={connectFuji}
+        setFuji={setFuji}
+
+        rike={rike}
+        isRike={isRike}
+        connectRike={connectRike}
+        setRike={setRike}
+      />
     </div>
-    <Footer />
     <ToastContainer></ToastContainer>
+    <Footer />
   </>);
 };
 
 
-function ProposalDetailView({ chains, handleChainVote }) {
+function ProposalDetailView({ fuji, setFuji, rike, setRike }) {
+  const {
+    isFuji,
+    isRike,
+    connectFuji,
+    connectRike
+  } = useConnect();
+
+  const { approve, transferFrom } = useERC()
+
   return (
-    <div className="my-5">
+    <div className="mt-4">
       <p>Back</p>
       <h5>anyDAO</h5>
       <main className="row">
         <div className="col-md-8">
           <ProposalDetails />
-          {JSON.stringify(chains)}
-          <ChainList chains={chains} handleChainVote={handleChainVote} />
+
+          <ChainVoter
+            chainName={"Fuji"}
+            chainBalance={fuji.chainBalance}
+            isConnected={isFuji}
+            vote={fuji.vote}
+            onConnectClick={connectFuji}
+            onApproveClick={() => {
+              setFuji(prevState => ({ ...prevState, vote: "waiting" }));
+              // Vote Approve on Rike
+              transferFrom('0x05180cE2471b2C320D1F9C17c2D25E7E98380820')
+                .then(() => setTimeout(3000))
+                .then(() => { console.log("after timeout"); setFuji(prevState => ({ ...prevState, vote: "approved", approvedCount: prevState.approvedCount + fuji.chainBalance })) })
+            }}
+            onDenyClick={() => {
+              setFuji(prevState => ({ ...prevState, vote: "waiting" }));
+              // Vote Deny on Rike
+              transferFrom('0x05180cE2471b2C320D1F9C17c2D25E7E98380820')
+                .then(() => setTimeout(2000))
+                .then(() => { console.log("after timeout"); setFuji(prevState => ({ ...prevState, vote: "denied", deniedCount: prevState.deniedCount + fuji.chainBalance })) })
+            }}
+          />
+          <ChainVoter
+            chainName={"Rinkeby"}
+            chainBalance={rike.chainBalance}
+            isConnected={isRike}
+            vote={rike.vote}
+            onConnectClick={connectRike}
+            onApproveClick={() => {
+              setRike(prevState => ({ ...prevState, vote: "waiting" }));
+              // Vote Approve on Rike
+              transferFrom('0x0A197D67Fa291eA4B6c1010a97b36cFf5C31453F')
+                .then(() => setTimeout(3000))
+                .then(() => { console.log("after timeout"); setRike(prevState => ({ ...prevState, vote: "approved", approvedCount: prevState.approvedCount + rike.chainBalance })) })
+            }}
+            onDenyClick={() => {
+              setRike(prevState => ({ ...prevState, vote: "waiting" }));
+              // Vote Deny on Rike
+              transferFrom('0x0A197D67Fa291eA4B6c1010a97b36cFf5C31453F')
+                .then(() => setTimeout(4000))
+                .then(() => { console.log("after timeout"); setRike(prevState => ({ ...prevState, vote: "denied", deniedCount: prevState.deniedCount + rike.chainBalance })) })
+            }}
+          />
         </div>
         <div className="col-md-4">
-          <ProposalResults />
+          <ProposalResults fuji={fuji} rike={rike} />
         </div>
       </main>
     </div>

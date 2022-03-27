@@ -22,7 +22,6 @@ export default function ProposalDetails() {
                 </div>
                 <p>Implementing a strong deflationary mechanism to the 1inch token.</p>
                 <p>Removing Single-Asset-Staking & Farming Completely. Replace with a deflationary mechanism.</p>
-                <p>This eliminates sell pressure from the stakers as well, and everybody is incentivised as the supply decreases = more valuable… Holders will be more committed to hold the token, instead of farming/staking and then selling the token, which decreases the value of the token.</p>
             </div>
         </div>
     </>
