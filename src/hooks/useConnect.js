@@ -223,7 +223,7 @@ const useConnect = () => {
         try {
             await window.ethereum.request({
                 method: 'wallet_switchEthereumChain',
-                params: [{ chainId: '0xa869' }], //0xFA
+                params: [{ chainId: '0xA869' }], //0xFA
             });
             setIsRike(false)
             setIsFuji(true)
@@ -233,7 +233,7 @@ const useConnect = () => {
                 try {
                     await window.ethereum.request({
                         method: 'wallet_addEthereumChain',
-                        params: [{ chainId: '0xa869', chainName: 'TestNet Fuji', nativeCurrency: { name: 'Fuji', symbol: 'AVAX', decimals: 18 }, rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'], blockExplorerUrls: ['https://testnet.snowtrace.io/'] }],
+                        params: [{ chainId: '0xA869', chainName: 'TestNet Fuji', nativeCurrency: { name: 'Fuji', symbol: 'AVAX', decimals: 18 }, rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'], blockExplorerUrls: ['https://testnet.snowtrace.io/'] }],
                     }); //0xFA
                 } catch (addError) {
                     // handle "add" 
