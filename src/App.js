@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import useConnect from './hooks/useConnect';
 import useCastVote from './hooks/useCastVote';
-import useERC20Contract from './hooks/useERC20Contract';
-
+import useERC20Contract from './hooks/useERC20';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -29,10 +28,10 @@ const App = () => {
     connectRike
   } = useConnect();
 
-  const { } = useERC20Contract
+  const { getBalance } = useERC20Contract();
 
   const [fuji, setFuji] = useState({
-    chainBalance: 130000,
+    chainBalance: 10,
     status: isFuji ? "connected" : "disconnected",
     vote: 'null',
     approvedCount: 80345,
@@ -40,12 +39,18 @@ const App = () => {
   });
 
   const [rike, setRike] = useState({
-    chainBalance: 100134,
+    chainBalance: 10,
     status: isRike ? "connected" : "disconnected",
     vote: 'null',
     approvedCount: 72545,
     deniedCount: 34684,
   });
+
+  /*getBalance('0x1d7C6846F033e593b4f3f21C39573bb1b41D43Cb', currentAccount)
+    .then((balance) => setRike(prevState => ({
+      ...prevState, chainBalance: balance
+    })));*/
+
 
   return (<>
     <div className="container-xl flex-shrink-0">
@@ -98,7 +103,7 @@ function ProposalDetailView({ fuji, setFuji, rike, setRike }) {
               castVote(FUJI_CONTRACT)
                 .then(() => setTimeout(3000))
                 .then(() => { console.log("after timeout"); setFuji(prevState => ({ ...prevState, vote: "approved", approvedCount: prevState.approvedCount + fuji.chainBalance })) })
-                .catch(() => setFuji(prevState => ({ ...prevState, vote: "null" })))
+                .catch((err) => { console.log(err); setFuji(prevState => ({ ...prevState, vote: "null" })) })
             }}
             onDenyClick={() => {
               setFuji(prevState => ({ ...prevState, vote: "waiting" }));
@@ -106,7 +111,7 @@ function ProposalDetailView({ fuji, setFuji, rike, setRike }) {
               castVote(FUJI_CONTRACT)
                 .then(() => setTimeout(2000))
                 .then(() => { console.log("after timeout"); setFuji(prevState => ({ ...prevState, vote: "denied", deniedCount: prevState.deniedCount + fuji.chainBalance })) })
-                .catch(() => setFuji(prevState => ({ ...prevState, vote: "null" })))
+                .catch((err) => { console.log(err); setFuji(prevState => ({ ...prevState, vote: "null" })) })
             }}
           />
           <ChainVoter
@@ -121,7 +126,7 @@ function ProposalDetailView({ fuji, setFuji, rike, setRike }) {
               castVote(RIKE_CONTRACT)
                 .then(() => setTimeout(3000))
                 .then(() => { console.log("after timeout"); setRike(prevState => ({ ...prevState, vote: "approved", approvedCount: prevState.approvedCount + rike.chainBalance })) })
-                .catch(() => setRike(prevState => ({ ...prevState, vote: "null" })))
+                .catch((err) => { console.log(err); setRike(prevState => ({ ...prevState, vote: "null" })) })
 
             }}
             onDenyClick={() => {
@@ -130,7 +135,7 @@ function ProposalDetailView({ fuji, setFuji, rike, setRike }) {
               castVote(RIKE_CONTRACT)
                 .then(() => setTimeout(4000))
                 .then(() => { console.log("after timeout"); setRike(prevState => ({ ...prevState, vote: "denied", deniedCount: prevState.deniedCount + rike.chainBalance })) })
-                .catch(() => setRike(prevState => ({ ...prevState, vote: "null" })))
+                .catch((err) => { console.log(err); setRike(prevState => ({ ...prevState, vote: "null" })) })
             }}
           />
         </div>

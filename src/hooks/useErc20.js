@@ -7,14 +7,18 @@ import useConnect from './useConnect'
 const useERC20Contract = () => {
     const { currentAccount } = useConnect()
 
-    const getERC20Contract = (add) => {
-        const contract = new web3.eth.Contract(ERC20, addEventListener)
+    const getERC20Contract = (address) => {
+        const contract = new web3.eth.Contract(ERC20, address)
         return contract
     }
-    const getBalance = async (tokenAdd) => {
+    const getBalance = async (tokenAdd, userAddr) => {
         const contractERC = getERC20Contract(tokenAdd)
-        const balance = await contractERC.methods.balanceOf(currentAccount).call()
-        return (balance / 1000000000000000000)
+        try {
+            const balance = await contractERC.methods.balanceOf(userAddr).call()
+            return balance
+        } catch (e) {
+            return '0'
+        }
     }
     return {
         getBalance
