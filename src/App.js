@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import useConnect from './hooks/useConnect';
 import useCastVote from './hooks/useCastVote';
-import useERC20Contract from './hooks/useERC20';
+import useERC20Contract from './hooks/useERC20Contract';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
