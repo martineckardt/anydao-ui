@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import useConnect from './hooks/useConnect';
 import useCastVote from './hooks/useCastVote';
+import useERC20Contract from './hooks/useERC20Contract';
 
 
 import { ToastContainer, toast } from 'react-toastify';
@@ -27,6 +28,8 @@ const App = () => {
     connectFuji,
     connectRike
   } = useConnect();
+
+  const { } = useERC20Contract
 
   const [fuji, setFuji] = useState({
     chainBalance: 130000,
