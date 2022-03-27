@@ -31,7 +31,7 @@ const App = () => {
   const { getBalance } = useERC20Contract();
 
   const [fuji, setFuji] = useState({
-    chainBalance: 10,
+    chainBalance: 113340,
     status: isFuji ? "connected" : "disconnected",
     vote: 'null',
     approvedCount: 80345,
@@ -39,7 +39,7 @@ const App = () => {
   });
 
   const [rike, setRike] = useState({
-    chainBalance: 10,
+    chainBalance: 20349,
     status: isRike ? "connected" : "disconnected",
     vote: 'null',
     approvedCount: 72545,
