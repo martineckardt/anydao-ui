@@ -5,7 +5,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-
+/**
+ * Hook for connecting to the chain and changing chains using the wallet
+ */
 const useConnect = () => {
     const [currentAccount, setCurrentAccount] = useState('');
     const [loading, setLoading] = useState(false);

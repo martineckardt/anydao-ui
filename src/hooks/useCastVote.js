@@ -3,6 +3,9 @@ import CastVote from '../ABIs/CastVote.json'
 
 import useConnect from './useConnect'
 
+/**
+ * Hook for casting a vote on the current chain
+ */
 const useCastVote = () => {
     const { currentAccount, toastMessage } = useConnect()
 
