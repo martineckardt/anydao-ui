@@ -1,5 +1,8 @@
 import clock from '../assets/clock.svg';
 
+/**
+ * Card containing the information about the proposal, including the title, description, and time left to vote.
+ */
 export default function ProposalDetails() {
     return <>
         <div className="card">
