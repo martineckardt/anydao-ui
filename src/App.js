@@ -13,9 +13,15 @@ import ChainVoter from "./components/ChainVoter";
 import ProposalDetails from "./components/ProposalDetails";
 import ProposalResults from "./components/ProposalResults";
 
+// Contract address of the parent govenor
 const FUJI_CONTRACT = "0x05180cE2471b2C320D1F9C17c2D25E7E98380820";
+
+// Contract address of the child govenor (to be extended with more child govenors)
 const RIKE_CONTRACT = "0x0A197D67Fa291eA4B6c1010a97b36cFf5C31453F";
 
+/**
+ * anyDAO Voting screen: Shows a proposal and allows users to vote on it on all the chains. 
+ */
 const App = () => {
   const {
     SignOut,
@@ -45,12 +51,6 @@ const App = () => {
     approvedCount: 72545,
     deniedCount: 34684,
   });
-
-  /*getBalance('0x1d7C6846F033e593b4f3f21C39573bb1b41D43Cb', currentAccount)
-    .then((balance) => setRike(prevState => ({
-      ...prevState, chainBalance: balance
-    })));*/
-
 
   return (<>
     <div className="container-xl flex-shrink-0">
