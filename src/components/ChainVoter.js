@@ -1,3 +1,14 @@
+/**
+ * Voting module for a single chain
+ * @param {*} Dictionary containing information of a chain
+ * - chainName: name of the chain
+ * - chainBalance: governance token balance on the chain 
+ * - status: Is the wallet currently connected to the chain?
+ * - vote: what did the token holder vote on?
+ * - onApproveClick: event handler for the approve button
+ * - onDenyClick: event handler for the deny button
+ * - onConnectClick: event handler for the connect button
+ */
 export default function ChainVoter({ status, vote, isConnected, chainName, chainBalance, onConnectClick, onApproveClick, onDenyClick }) {
     return (
         <>

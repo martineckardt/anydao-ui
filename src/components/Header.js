@@ -1,6 +1,9 @@
 import substr from "../utils/substr";
 import logo_light from '../assets/logo_light.svg';
 
+/**
+ * Header containing the logo and the button to connect the wallet.
+ */
 export default function Header({ onWalletConnectClick, loading, currentAccount }) {
     return (
         <div className="row py-4">

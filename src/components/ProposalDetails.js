@@ -1,5 +1,8 @@
 import clock from '../assets/clock.svg';
 
+/**
+ * Card containing the information about the proposal, including the title, description, and time left to vote.
+ */
 export default function ProposalDetails() {
     return <>
         <div className="card">
@@ -9,7 +12,7 @@ export default function ProposalDetails() {
                         <h6>VOTE to make $1INCH deflationary!</h6>
                         <div className="d-flex flex-row align-items-center mb-1">
                             <img src={clock} alt="anyDAO" style={{ height: 15 + 'px' }} className="me-1" />
-                            <span style={{ opacity: 0.7 }}>Snapshot taken at 01th July 2022 10:23</span>
+                            <span style={{ opacity: 0.7 }}>Snapshot taken at 22th March 2022 10:23 (UTC)</span>
                         </div>
                         <div className="d-flex flex-row align-items-center mb-4">
                             <img src={clock} alt="anyDAO" style={{ height: 15 + 'px' }} className="me-1" />

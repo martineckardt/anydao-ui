@@ -1,5 +1,9 @@
 import ChainVoter from "./ChainVoter"
 
+/**
+ * A list of the chains where the governance token holder holds tokens and is eligebile to vote on.
+ * @param {} Dictionary containing chains and the event handler for the vote button 
+ */
 export default function ChainList({ chains, handleChainVote }) {
     return <>
         {Object.entries(chains).map(([chainName, { chainBalance, status, vote }]) => <ChainVoter
