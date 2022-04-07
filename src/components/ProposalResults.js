@@ -1,4 +1,9 @@
 // TODO display results from Blockchain
+
+/**
+ * Component that shows the results of a proposal on different chains. 
+ * Furthermore, it shoes the aggregated result from all the chains.
+ */
 export default function ProposalResults({ fuji, rike }) {
     const fujiSum = fuji.approvedCount + fuji.deniedCount;
     const rikeSum = rike.approvedCount + rike.deniedCount;
