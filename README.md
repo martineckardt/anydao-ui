@@ -6,6 +6,9 @@ Multi-chain projects face many challenges in governance. If there is no cross-ch
 - They may either hold the governance on a single chain and require all the governance toke holders to move their tokens to the governance chain
 - They have independet governance on each chain. This may result in communities deciding differently on proposals and have the protocolls on the chains drift apart.
 
+# Solution
+Enable cross-chain governance to make it possible to vote on the same proposals from different chains. 
+
 # Infrastructure
 To enable cross-chain communication we used [LayerZero](https://layerzero.network/). Some of the functionality is mocked. 
 
